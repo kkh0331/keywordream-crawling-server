@@ -8,9 +8,9 @@ def hello_world():
 
 @app.route('/api/news', methods=['POST'])
 def crawling_keyword():
-    stockList = request.json['stockList'] # [{name, code}]
-    news_list = total_crawling(stockList)
-    return news_list
+    stockList = request.json['stockList'] # [code]
+    stock_news = total_crawling(stockList)
+    return stock_news
 
 if __name__ == '__main__':
     app.run(debug=True)

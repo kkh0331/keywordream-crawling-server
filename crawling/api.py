@@ -1,8 +1,4 @@
-import os
-import json
 import requests
-from dotenv import load_dotenv
-load_dotenv()
 
 def naver_news_api(stock_code):
   '''
@@ -18,10 +14,10 @@ def naver_news_api(stock_code):
   - title
   - titleFull
   '''
-  naver_api_url = os.getenv('NAVER_API_URL')
+
   page_size = 20 
   page = 1 
-  url = f"{naver_api_url}/{stock_code}?pageSize={page_size}&page={page}"
+  url = f"https://m.stock.naver.com/api/news/stock/{stock_code}?pageSize={page_size}&page={page}"
   
   try:
     response = requests.get(url)
@@ -30,19 +26,4 @@ def naver_news_api(stock_code):
     else:
       return "Error"
   except Exception as ex:
-    return "Error"
-  
-  # request = urllib.request.Request(url)
-  # request.add_header("X-Naver-Client-Id", client_id)
-  # request.add_header("X-Naver-Client-Secret", client_secret)
-  # response = urllib.request.urlopen(request)
-  # rescode = response.getcode()
-  # if(rescode == 200):
-  #   response_body = response.read()
-  #   # print(type(response_body))
-  #   return json.loads(response_body.decode('utf-8'))['items']
-  # else:
-  #   print(f"Error Code: ${rescode}")
-  #   return "Error"
-    
-  
+    return "Error"  
