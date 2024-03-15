@@ -9,8 +9,9 @@ def hello_world():
 @app.route('/api/news', methods=['POST'])
 def crawling_keyword():
     stockList = request.json['stockList'] # [code]
-    stock_news = total_crawling(stockList)
-    return stock_news
+    stock_contents = total_crawling(stockList)
+    # TODO stock_contents 키워드 뽑기
+    return stock_contents
 
 if __name__ == '__main__':
     app.run(debug=True)

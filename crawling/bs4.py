@@ -8,8 +8,16 @@ def extract_content(url):
     html = response.text
     soup = BeautifulSoup(html, 'html.parser')
     content = soup.select_one('#dic_area')
-    # print(content)
-    # return content.prettify() # 태그형태로 받은 content을 html 상태로 string화
-    return content.get_text()
+    
+    for img_tag in content.find_all('img'):
+      if img_tag.has_attr('data-src'):
+        img_tag['src'] = img_tag['data-src']
+        del img_tag['data-src']
+    db_content = content.prettify()
+    
+    for element in content.find_all(class_='img_desc'):
+      element.decompose()
+      
+    return content.get_text(), db_content
   else:
     return "none"
