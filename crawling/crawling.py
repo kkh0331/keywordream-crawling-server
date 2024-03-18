@@ -1,12 +1,11 @@
 from crawling.api import naver_news_api
 from crawling.bs4 import extract_content
 from datetime import datetime
-import requests
+from multiprocessing import Pool
 from bs4 import BeautifulSoup
 
-def extract_required_data(news_list):
-  content_list = []
-  for news in news_list:
+def preprocess_data(news):
+  try:
     detail = news["items"][0]
     news_info = {}
     news_info["title"] = detail["title"]
@@ -16,11 +15,13 @@ def extract_required_data(news_list):
     news_info["imgUrl"] = detail["imageOriginLink"]
     url = extract_url(detail['officeId'], detail['articleId'])
     news_info["url"] = url
-    res_content, db_content = extract_content(url)
-    news_info["content"] = db_content
+    content = extract_content(url)
+    news_info["content"] = content
     # TODO 뉴스 DB에 저장
-    content_list.append(res_content)
-  return content_list
+    return content
+  except:
+    print("데이터 크롤링 오류")
+    pass
 
 def extract_url(officeId, articleId):
   return f"https://n.news.naver.com/article/{officeId}/{articleId}"
@@ -28,8 +29,10 @@ def extract_url(officeId, articleId):
 def each_crawling(code):
   news_list = naver_news_api(code)
   if(news_list =="Error"): return "Error"# 예외처리
-  reauired_news_list = extract_required_data(news_list)
-  return reauired_news_list
+  num_processes = 4
+  with Pool(num_processes) as pool:
+    results = pool.map(preprocess_data, news_list)
+  return results
   
 def total_crawling(stockList):
   stock_news = {}

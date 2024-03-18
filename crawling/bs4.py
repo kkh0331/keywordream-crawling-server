@@ -13,11 +13,10 @@ def extract_content(url):
       if img_tag.has_attr('data-src'):
         img_tag['src'] = img_tag['data-src']
         del img_tag['data-src']
-    db_content = content.prettify()
     
     for element in content.find_all(class_='img_desc'):
       element.decompose()
       
-    return content.get_text(), db_content
+    return content.prettify()
   else:
     return "none"

@@ -23,13 +23,13 @@ def crawling_keyword():
         mecab = Mecab() 
     except: 
         mecab = Mecab(path)
-    nouns = mecab.nouns(news_text)
+    nouns = mecab.nouns(' '.join(news_text))
     nouns = [n for n in nouns if len(n) > 1]
 
     # 단어 개수 세기, 가장 많이 등장한 N개 구하기(Counter.most_common())
     count = Counter(nouns)
     tags = count.most_common(40)
-    print(tags[:20])
+    return tags
 
 if __name__ == '__main__':
     app.run(debug=True)
