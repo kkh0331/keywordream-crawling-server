@@ -15,7 +15,7 @@ def naver_news_api(stock_code):
   - titleFull
   '''
 
-  page_size = 10
+  page_size = 20
   page = 1 
   url = f"https://m.stock.naver.com/api/news/stock/{stock_code}?pageSize={page_size}&page={page}"
   
