@@ -1,7 +1,7 @@
 from flask import Flask, request
 from konlpy.tag import Mecab
 from collections import Counter
-from crawling.crawling import total_crawling, each_crawling
+from crawling.crawling import each_crawling
 app = Flask(__name__)
 
 @app.route('/')
@@ -10,10 +10,11 @@ def hello_world():
 
 @app.route('/api/news', methods=['POST'])
 def crawling_keyword():
-    code = request.json['stockList'] # [code]
+    # request body : {"name" : "삼성전자", "code" : "005930"}
+    name = request.json['name'] # [code]
+    code = request.json['code']
     # stock_contents = total_crawling(stockList)
-    # # TODO stock_contents 키워드 뽑기
-    news_text = each_crawling(code[0]); # code에 대한 뉴스 가져옴
+    news_text = each_crawling(name, code) or []; # code에 대한 뉴스 가져옴
     #return news_text
 
     # KoNLpy + Mecab : 형태소 분석

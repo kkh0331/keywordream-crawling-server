@@ -7,6 +7,7 @@ def extract_content(url):
   if(response.status_code == 200):
     html = response.text
     soup = BeautifulSoup(html, 'html.parser')
+    title = soup.select_one('#title_area')
     content = soup.select_one('#dic_area')
     
     for img_tag in content.find_all('img'):
@@ -17,6 +18,6 @@ def extract_content(url):
     for element in content.find_all(class_='img_desc'):
       element.decompose()
       
-    return content.prettify()
+    return title.get_text(), content.prettify()
   else:
     return "none"
