@@ -2,20 +2,21 @@ from flask import Flask, request
 from konlpy.tag import Mecab
 from collections import Counter
 from crawling.crawling import each_crawling
-app = Flask(__name__)
+from db.connect import get_db
+from db.check_insert_stock import check_insert_stock
 
-@app.route('/')
-def hello_world():
-    return "test"
+app = Flask(__name__)
+db = get_db()
+print(db)
 
 @app.route('/api/news', methods=['POST'])
 def crawling_keyword():
     # request body : {"name" : "삼성전자", "code" : "005930"}
     name = request.json['name'] # [code]
     code = request.json['code']
-    # stock_contents = total_crawling(stockList)
-    news_text = each_crawling(name, code) or []; # code에 대한 뉴스 가져옴
-    #return news_text
+    tags = None
+    if check_insert_stock(name, code):
+        news_text = each_crawling(code) # code에 대한 뉴스 가져옴
 
     # KoNLpy + Mecab : 형태소 분석
     # 형태소 분석기로 명사만 추출,1글자는 의미없다고 보고 삭제
@@ -31,6 +32,6 @@ def crawling_keyword():
     count = Counter(nouns)
     tags = count.most_common(40)
     return tags
-
+    
 if __name__ == '__main__':
     app.run(debug=True)

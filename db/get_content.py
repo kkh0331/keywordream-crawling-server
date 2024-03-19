@@ -1,22 +1,18 @@
-from db.connect import connect_mariaDB, disconnect_mariaDB
-import pymysql as my
+from db.connect import get_db
 
-def getContent(newsCode):
-    connection = None
+def get_content(newsId):
     content = None
+    
     try:
-        connection = connect_mariaDB()
-        # print("DB 연결 성공")
-        cursor = connection.cursor()
-        query = "SELECT content from News WHERE newsCode = %s"
-        cursor.execute(query, (newsCode, ))
+        cursor = get_db().cursor()
+        query = "SELECT content from News WHERE newsId = %s"
+        cursor.execute(query, (newsId, ))
         result = cursor.fetchone()
         if result:
-            # print(result)
             content = result['content']
         cursor.close()
+        
     except Exception as e:
-        print("접속오류", e)
-    finally:
-        disconnect_mariaDB(connection)
+        print("접속오류 getContent", e)
+        
     return content
