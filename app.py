@@ -1,13 +1,15 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from konlpy.tag import Mecab
 from collections import Counter
 from crawling.crawling import each_crawling
 from db.connect import get_db
 from db.check_insert_stock import check_insert_stock
+from db.insert_keywords import insert_keywords
+import json
 
 app = Flask(__name__)
 db = get_db()
-print(db)
+# print(db)
 
 @app.route('/api/news', methods=['POST'])
 def crawling_keyword():
@@ -31,7 +33,13 @@ def crawling_keyword():
     # 단어 개수 세기, 가장 많이 등장한 N개 구하기(Counter.most_common())
     count = Counter(nouns)
     tags = count.most_common(40)
-    return tags
+    result = json.dumps([{"word":tag[0], "cnt":tag[1]} for tag in tags], ensure_ascii=False)
+    if insert_keywords(result, code):
+        response_data = {"message": "요청이 성공적으로 처리되었습니다."}
+        return jsonify(response_data), 200
+    
+    response_data = {"message": "요청이 실패했습니다."}
+    return jsonify(response_data), 404
     
 if __name__ == '__main__':
     app.run(debug=True)
