@@ -2,14 +2,14 @@ import requests
 from bs4 import BeautifulSoup
 
 def extract_content(url):
-  sample_url = url
-  response = requests.get(sample_url)
+  response = requests.get(url)
   if(response.status_code == 200):
     html = response.text
     soup = BeautifulSoup(html, 'html.parser')
-    title = soup.select_one('#title_area')
     content = soup.select_one('#dic_area')
-    
+    if content is None:
+      return None
+        
     for img_tag in content.find_all('img'):
       if img_tag.has_attr('data-src'):
         img_tag['src'] = img_tag['data-src']
@@ -18,6 +18,6 @@ def extract_content(url):
     for element in content.find_all(class_='img_desc'):
       element.decompose()
       
-    return title.get_text(), content.prettify()
+    return content.prettify()
   else:
-    return "none"
+    return None

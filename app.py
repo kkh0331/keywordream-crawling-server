@@ -1,21 +1,24 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from konlpy.tag import Mecab
 from collections import Counter
 from crawling.crawling import each_crawling
-app = Flask(__name__)
+from db.connect import get_db
+from db.check_insert_stock import check_insert_stock
+from db.insert_keywords import insert_keywords
+import json
 
-@app.route('/')
-def hello_world():
-    return "test"
+app = Flask(__name__)
+db = get_db()
+# print(db)
 
 @app.route('/api/news', methods=['POST'])
 def crawling_keyword():
     # request body : {"name" : "삼성전자", "code" : "005930"}
     name = request.json['name'] # [code]
     code = request.json['code']
-    # stock_contents = total_crawling(stockList)
-    news_text = each_crawling(name, code) or []; # code에 대한 뉴스 가져옴
-    #return news_text
+    tags = None
+    if check_insert_stock(name, code):
+        news_text = each_crawling(code) # code에 대한 뉴스 가져옴
 
     # KoNLpy + Mecab : 형태소 분석
     # 형태소 분석기로 명사만 추출,1글자는 의미없다고 보고 삭제
@@ -30,7 +33,13 @@ def crawling_keyword():
     # 단어 개수 세기, 가장 많이 등장한 N개 구하기(Counter.most_common())
     count = Counter(nouns)
     tags = count.most_common(40)
-    return tags
-
+    result = json.dumps([{"word":tag[0], "cnt":tag[1]} for tag in tags], ensure_ascii=False)
+    if insert_keywords(result, code):
+        response_data = {"message": "요청이 성공적으로 처리되었습니다."}
+        return jsonify(response_data), 200
+    
+    response_data = {"message": "요청이 실패했습니다."}
+    return jsonify(response_data), 404
+    
 if __name__ == '__main__':
     app.run(debug=True)
