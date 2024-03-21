@@ -5,11 +5,12 @@ from crawling.crawling import each_crawling
 from db.connect import get_db
 from db.check_insert_stock import check_insert_stock
 from db.insert_keywords import insert_keywords
+from flask_cors import CORS
 import json
 
 app = Flask(__name__)
+CORS(app, resources={r'*':{'origins':'http://localhost:3000'}})
 db = get_db()
-# print(db)
 
 @app.route('/api/news', methods=['POST'])
 def crawling_keyword():
