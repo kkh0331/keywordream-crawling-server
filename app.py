@@ -20,7 +20,7 @@ def crawling_keyword():
     tags = None
     if check_insert_stock(name, code):
         news_text = each_crawling(code) # code에 대한 뉴스 가져옴
-
+    # return news_text
     # KoNLpy + Mecab : 형태소 분석
     # 형태소 분석기로 명사만 추출,1글자는 의미없다고 보고 삭제
     path = "/opt/homebrew/lib/mecab/dic/mecab-ko-dic"
