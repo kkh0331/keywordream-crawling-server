@@ -2,9 +2,8 @@ from crawling.api import naver_news_api
 from crawling.bs4 import extract_content
 from datetime import datetime
 import multiprocessing
-from multiprocessing import Pool, cpu_count, Manager
+from multiprocessing import Pool, cpu_count
 from db.insert_news import insert_news
-from db.get_content import get_content
 from db.check_news_id import check_news_id
 
 def extract_url(officeId, articleId):
