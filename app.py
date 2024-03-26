@@ -11,19 +11,22 @@ from flask_cors import CORS
 from bs4 import BeautifulSoup
 from transformers import pipeline
 import json
+import os
+
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 app = Flask(__name__)
-CORS(app, resources={r'*':{'origins':'http://localhost:3000'}})
+CORS(app, resources={r'*':{'origins':'http://localhost:3003'}})
 db = get_db()
 kor_clf_sentiment = pipeline("sentiment-analysis", "snunlp/KR-FinBert-SC")
 
 @app.route('/api/news', methods=['POST'])
 def crawling_keyword():
     # request body : {"name" : "삼성전자", "code" : "005930"}
-    name = request.json['name'] # [code]
+    # name = request.json['name'] # [code]
     code = request.json['code']
     tags = None
-    if check_insert_stock(name, code):
+    if check_insert_stock("임시", code):
         news_text = each_crawling(code) # code에 대한 뉴스 가져옴
     # return news_text
     # KoNLpy + Mecab : 형태소 분석
