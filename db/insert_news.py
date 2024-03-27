@@ -4,7 +4,7 @@ def insert_news(news_list):
     
     try:
         cursor = get_db().cursor()
-        query = "INSERT INTO News (title, press, newsDate, content, imgUrl, originalUrl, newsId, stockCode) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+        query = "INSERT INTO News (title, press, newsDate, content, imgUrl, originalUrl, newsId) VALUES (%s, %s, %s, %s, %s, %s, %s)"
         cursor.executemany(query, news_list)
         cursor.close()
         
