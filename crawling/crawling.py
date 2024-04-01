@@ -7,11 +7,12 @@ from db.insert_news import insert_news
 from db.check_news_id import check_news_id
 from db.insert_news_stock import insert_news_stock
 import json
+import asyncio
 
 def extract_url(officeId, articleId):
   return f"https://n.news.naver.com/article/{officeId}/{articleId}"
 
-def preprocess_data(news):
+async def preprocess_data(news):
   current = multiprocessing.current_process()
   try:
     newsId = news['articleId']
@@ -22,7 +23,8 @@ def preprocess_data(news):
     newsDate = datetime.strptime(news["datetime"], '%Y%m%d%H%M')
     imgUrl = news["imageOriginLink"]
     originalUrl = extract_url(news['officeId'], news['articleId'])
-    content = extract_content(originalUrl)
+    content = await asyncio.wait_for(extract_content(originalUrl), timeout=2)
+    #content = extract_content(originalUrl)
     
     if content is None:
       return None
