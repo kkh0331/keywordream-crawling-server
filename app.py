@@ -12,14 +12,14 @@ from bs4 import BeautifulSoup
 from transformers import pipeline
 import json
 import os
+import time
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
-
 app = Flask(__name__)
-CORS(app, resources={r'*':{'origins':'http://localhost:3003'}})
+CORS(app, resources={r'*':{'origins':'http://43.202.201.221:3003'}})
 db = get_db()
-kor_clf_sentiment = pipeline("sentiment-analysis", "snunlp/KR-FinBert-SC")
 
+kor_clf_sentiment = pipeline("sentiment-analysis", "snunlp/KR-FinBert-SC")
 stopwords = ['최근', '요즘', '지난달', '이달', '지난해', '올해', '이날', '지난해', '전날', '이전', '이후',
              '극내','반면','기준', '관련','상황','대비','이상','이하','장중','이후','개인','기관','포인트',
              '주가','거래일','지수','기록','활용','요소']
@@ -30,37 +30,42 @@ def crawling_keyword():
     # name = request.json['name'] # [code]
     code = request.json['code']
     tags = None
-    if check_insert_stock("임시", code):
-        news_text = each_crawling(code) # code에 대한 뉴스 가져옴
+    time0 = time.time()
+    # # if check_insert_stock("임시", code):
+    # time2 = time.time()
+    # print("appㅎㅎㅎ : ", time2-time0)
+    news_text = each_crawling(code) #   code에 대한 뉴스 가져옴
+    if news_text == []:
+        response_data = {"message": "뉴스리스트가 없어요ㅠㅠ."}
+        return jsonify(response_data), 404
+    time1 = time.time()
+    print("app time1 - time0 : ", time1 - time0)
     # return news_text
     # KoNLpy + Mecab : 형태소 분석
     # 형태소 분석기로 명사만 추출,1글자는 의미없다고 보고 삭제
     path = "/opt/homebrew/lib/mecab/dic/mecab-ko-dic"
     try:
-        mecab = Mecab() 
-    except: 
+        mecab = Mecab()
+    except:
         mecab = Mecab(path)
     nouns = mecab.nouns(' '.join(news_text))
     nouns = [n for n in nouns if len(n) > 1]
-
      # 종목 이름과 일부를 불용어로 추가
     stopwords_exp = stopwords + get_stopwords_for_stock(code)
     print(stopwords_exp)
-
     # 단어 개수 세기, 가장 많이 등장한 N개 구하기(Counter.most_common())
     count = Counter(nouns)
     tags = count.most_common(40)
     # 불용어 제거
     tags = [(word, cnt) for word, cnt in tags if word not in stopwords_exp]
-    
     result = json.dumps([{"word":tag[0], "cnt":tag[1]} for tag in tags], ensure_ascii=False)
+    time2 = time.time()
+    print("app time2 - time1 : ",time2-time1)
     if insert_keywords(result, code):
         response_data = {"message": "요청이 성공적으로 처리되었습니다."}
         return jsonify(response_data), 200
-    
     response_data = {"message": "요청이 실패했습니다."}
     return jsonify(response_data), 404
-
 
 def get_stopwords_for_stock(code):
     # 여기에서 데이터베이스 또는 다른 소스로부터 종목 이름과 일부를 가져와서 불용어로 처리합니다.
@@ -69,20 +74,15 @@ def get_stopwords_for_stock(code):
     query = "SELECT name FROM Stock WHERE stockCode = %s"
     cursor.execute(query, (code, ))
     stock_name = cursor.fetchone()
-
     if stock_name:
         stock_name = stock_name['name']  # dict에서 종목 이름 문자열로 변환
-        
         # 종목 이름의 일부도 불용어로 처리
         for i in range(len(stock_name)):
             part_of_name = stock_name[:i+1]  # 종목 이름의 처음부터 i+1까지의 부분
             if len(part_of_name) > 1:  # 한 글자 이상인 경우에만 추가
                 stopwords_for_stock.append(part_of_name)
-
     print(stopwords_for_stock)
-
     return stopwords_for_stock
-
 
 @app.route('/api/krFinBert', methods=['POST'])
 def content_sentiment():
@@ -107,4 +107,7 @@ def calculate_score(result):
     else: return -1
     
 if __name__ == '__main__':
-    app.run(debug=True)
+    # from waitress import serve
+    # from app import app
+    # serve(app, host="0.0.0.0", port=5000)
+    app.run(host='0.0.0.0')
