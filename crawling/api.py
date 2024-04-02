@@ -24,6 +24,6 @@ def naver_news_api(stock_code):
     if(response.status_code == 200):
       return response.json()
     else:
-      return "Error"
+      return []
   except Exception as ex:
-    return "Error"  
+    return []
