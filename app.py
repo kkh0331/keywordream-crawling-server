@@ -14,9 +14,11 @@ import json
 import os
 import time
 
+from utils.json_app import JsonApp
+
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
-app = Flask(__name__)
-CORS(app, resources={r'*':{'origins':'http://43.202.201.221:3003'}})
+app = JsonApp(Flask(__name__))
+# CORS(app, resources={r'*':{'origins':'http://43.202.201.221:3003'}})
 db = get_db()
 
 kor_clf_sentiment = pipeline("sentiment-analysis", "snunlp/KR-FinBert-SC")
