@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from konlpy.tag import Mecab
 from collections import Counter
 from crawling.crawling import each_crawling
-from db.connect import get_db
+from database.connect import get_database
 from db.check_insert_stock import check_insert_stock
 from db.insert_keywords import insert_keywords
 from db.get_title_content import get_title_content
@@ -14,12 +14,13 @@ import json
 import os
 import time
 
+from stock.controller import stock
 from utils.json_app import JsonApp
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 app = JsonApp(Flask(__name__))
 # CORS(app, resources={r'*':{'origins':'http://43.202.201.221:3003'}})
-db = get_db()
+db = get_database()
 
 kor_clf_sentiment = pipeline("sentiment-analysis", "snunlp/KR-FinBert-SC")
 stopwords = ['최근', '요즘', '지난달', '이달', '지난해', '올해', '이날', '지난해', '전날', '이전', '이후',
@@ -107,6 +108,8 @@ def calculate_score(result):
     if(result[0]['label'] == 'neutral'): return 0
     elif(result[0]['label'] == 'positive') : return 1
     else: return -1
+
+app.register_blueprint(stock, url_prefix="/api/stocks")
     
 if __name__ == '__main__':
     # from waitress import serve
