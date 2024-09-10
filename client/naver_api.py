@@ -17,7 +17,7 @@ def naver_news_crawling_by_code(code):
   - titleFull
   '''
 
-  page_size = 3
+  page_size = 20
   page = 1 
   url = f"https://m.stock.naver.com/api/news/stock/{code}?pageSize={page_size}&page={page}"
   
