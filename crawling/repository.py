@@ -41,9 +41,9 @@ def save_news_list(news_list):
 def find_news_ids_by_code_and_news_ids_in(code, news_ids):
   try:
     cursor = get_database().cursor()
-    newsIdStockCodes = [(news_id, code) for news_id in news_ids]
+    news_ids_codes = [(news_id, code) for news_id in news_ids]
     query = "SELECT news_id FROM news_stocks WHERE (news_id, stock_code) IN %s"
-    cursor.execute(query, (newsIdStockCodes,))
+    cursor.execute(query, (news_ids_codes,))
     result = cursor.fetchall()
     return [str(item['news_id']).zfill(10) for item in result]
   except:
@@ -55,9 +55,9 @@ def find_news_ids_by_code_and_news_ids_in(code, news_ids):
 def save_news_stocks(code, news_ids):
   try:
     cursor = get_database().cursor()
-    newsIdStockCodes = [(news_id, code) for news_id in news_ids]
+    news_ids_codes = [(news_id, code) for news_id in news_ids]
     query = "INSERT INTO news_stocks (news_id, stock_code) VALUES (%s, %s)"
-    cursor.executemany(query, newsIdStockCodes)
+    cursor.executemany(query, news_ids_codes)
     get_database().commit()
   except:
     print(f"save_news_stocks(code, news_ids)에서 데이터베이스 서버 에러")
