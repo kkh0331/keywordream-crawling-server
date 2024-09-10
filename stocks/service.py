@@ -1,5 +1,5 @@
 from flask import abort
-from stock.repository import find_stock_by_code, update_recent_news_count_by_code
+from stocks.repository import find_stock_by_code, update_recent_news_count_by_code
 
 def find_stock(stock_code):
   stock = find_stock_by_code(stock_code)

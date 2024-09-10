@@ -1,5 +1,5 @@
 from flask import Blueprint
-from stock.service import find_stock, update_recent_news_count, extract_stopwords_at_stock
+from stocks.service import find_stock, update_recent_news_count, extract_stopwords_at_stock
 from utils.api_result import success_response
 from crawling.service import news_list_crawling_by_code
 from keywords.service import extract_keywords_in_news

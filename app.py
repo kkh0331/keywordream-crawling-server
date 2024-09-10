@@ -14,7 +14,7 @@ import json
 import os
 import time
 
-from stock.controller import stock
+from stocks.controller import stock
 from utils.json_app import JsonApp
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
