@@ -15,6 +15,7 @@ import os
 import time
 
 from stocks.controller import stock
+from news.controller import news
 from utils.json_app import JsonApp
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -110,6 +111,7 @@ def calculate_score(result):
     else: return -1
 
 app.register_blueprint(stock, url_prefix="/api/stocks")
+app.register_blueprint(news, url_prefix="/api/news")
     
 if __name__ == '__main__':
     # from waitress import serve
