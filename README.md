@@ -1,5 +1,6 @@
 # Keywordream Crawling Server
->Keywordream 프로젝트에서 Flask을 이용한 Crawling Server
+>Keywordream 프로젝트에서 Flask을 이용한 Crawling Server  
+>`pythoon version` : 3.10.0
 
 ## 🔗 Link
 리팩토링 전 링크
