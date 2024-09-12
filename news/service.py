@@ -18,9 +18,9 @@ def analyze_news_sentiment_by_krFinbert(news_id):
   for content in news['content']:
     content_score = kor_clf_sentiment(content)
     score += calculate_score(content_score)
-  is_good = 1 if score >= 0 else 0
+  is_good = True if score >= 0 else False
   update_is_good_by_news_id(is_good, news_id)
-  return str(is_good)
+  return is_good
   
 def calculate_score(result):
   if(result[0]['label'] == 'neutral'): return 0

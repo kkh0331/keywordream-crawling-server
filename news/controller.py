@@ -9,6 +9,6 @@ def analyze_news_sentiment(news_id):
   is_good = analyze_news_sentiment_by_krFinbert(news_id)
   result = {
     "news_id" : news_id,
-    "is_good" : bool(is_good)
+    "is_good" : is_good
   }
   return success_response(200, result)
